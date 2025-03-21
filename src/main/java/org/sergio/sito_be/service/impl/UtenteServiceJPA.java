@@ -10,6 +10,7 @@ import org.sergio.sito_be.entities.Utente;
 import org.sergio.sito_be.repository.UtenteRepo;
 import org.sergio.sito_be.service.def.UtenteService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class UtenteServiceJPA implements UtenteService {
 
     private final UtenteRepo utenteRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void aggiungiUtente(CreaUtenteRequest request) {
@@ -27,8 +29,8 @@ public class UtenteServiceJPA implements UtenteService {
         u.setNome(request.getNome());
         u.setCognome(request.getCognome());
         u.setUsername(request.getUsername());
-        u.setPassword(request.getPassword());
-        u.setRuolo(Ruolo.user);
+        u.setPassword(passwordEncoder.encode(request.getPassword()));
+        u.setRuolo(Ruolo.ROLE_USER);
         utenteRepo.save(u);
     }
 

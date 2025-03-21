@@ -1,6 +1,7 @@
 package org.sergio.sito_be.entities;
 
 public enum Ruolo {
-    admin,
-    user
+    role_admin,
+    user,
+    ROLE_USER
 }

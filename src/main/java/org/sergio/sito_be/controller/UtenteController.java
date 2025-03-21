@@ -9,10 +9,16 @@ import org.sergio.sito_be.DTO.response.CasaVacanzaDTO;
 import org.sergio.sito_be.DTO.response.UtenteDTO;
 import org.sergio.sito_be.entities.Utente;
 import org.sergio.sito_be.security.TokenUtil;
+import org.sergio.sito_be.security.jwt.JwtUtils;
 import org.sergio.sito_be.service.def.UtenteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
 
 import java.util.Comparator;
 import java.util.List;
@@ -26,26 +32,56 @@ public class UtenteController {
 
     private final TokenUtil tokenUtil;
 
+    private JwtUtils jwtUtils;
+    private AuthenticationManager authenticationManager;
+
     @PostMapping("/crea")
     public ResponseEntity<UtenteDTO> creaUtente( @Valid @RequestBody CreaUtenteRequest request) {
+        Authentication authentication;
         try {
             System.out.println("Ricevuto:" + request.getNome() + " " + request.getCognome() + " " + request.getUsername() + " " + request.getPassword());
             utenteService.aggiungiUtente(request);
+            authentication = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             System.out.println("Utente 2 creato");
-            return ResponseEntity.status(HttpStatus.OK).header("Utente creato", "token").build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        String jwtToken= jwtUtils.generateTokenFromUsername(userDetails);
+
+        return ResponseEntity.status(HttpStatus.OK).header("Utente creato e autenticato", jwtToken).build();
+
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login( @Valid @RequestBody LoginRequest request) {
-        Utente utente= utenteService.Login(request);
+        /*Utente utente= utenteService.Login(request);
         //System.out.println(utente);
         String token= tokenUtil.generaToken(utente);
         //System.out.println(ResponseEntity.status(HttpStatus.OK).header("Authorization", token).build());
-        return ResponseEntity.status(HttpStatus.OK).header("Authorization", token).build();
+        return ResponseEntity.status(HttpStatus.OK).header("Authorization", token).build();*/
+
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        String jwtToken= jwtUtils.generateTokenFromUsername(userDetails);
+
+        return ResponseEntity.status(HttpStatus.OK).header("Authorization", jwtToken).build();
+
     }
 
     @GetMapping("/all")

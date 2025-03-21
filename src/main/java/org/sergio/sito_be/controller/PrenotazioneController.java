@@ -9,6 +9,7 @@ import org.sergio.sito_be.entities.Prenotazione;
 import org.sergio.sito_be.service.def.PrenotazioneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
@@ -44,7 +45,7 @@ public class PrenotazioneController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<Prenotazione>> findAll() {
         try {

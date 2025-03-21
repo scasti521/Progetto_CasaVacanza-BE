@@ -36,6 +36,9 @@ public class Utente implements Comparable<Utente>{
     @Enumerated(EnumType.STRING)
     private Ruolo ruolo;
 
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled=true;
+
     @PrePersist
     protected void onCreate() {
         if (ruolo == null) {
