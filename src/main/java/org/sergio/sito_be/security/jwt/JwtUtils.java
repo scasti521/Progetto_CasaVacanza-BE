@@ -5,9 +5,11 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import org.sergio.sito_be.entities.Utente;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +47,7 @@ public class JwtUtils {
         String bearerToken = request.getHeader("Authorization"); // Estrae l'header Authorization
         logger.debug("Authorization Header: {}", bearerToken); // Logga il valore dell'header Authorization
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) { // Verifica se il token è presente e ha il prefisso corretto
+            System.out.println("Bearer token: " + bearerToken);
             return bearerToken.substring(7); // Rimuove il prefisso "Bearer " e restituisce solo il token
         }
         return null;
@@ -60,7 +63,29 @@ public class JwtUtils {
         String ruolo = userDetails.getAuthorities().iterator().next().getAuthority(); // Ottiene il ruolo dell'utente
         return Jwts.builder()
                 .claims()
+                 // Aggiunge il nome utente come claim del token
                 .add("ruolo", ruolo) // Aggiunge il nome utente come claim del token
+                .add("username", username)
+                .add("cognome", userDetails.getUsername())
+                .subject(username) // Imposta il nome utente come soggetto del token
+                .issuedAt(new Date()) // Imposta la data di emissione
+                .expiration(new Date((new Date()).getTime() + jwtExpirationMs)) // Imposta la scadenza del token
+                .and()
+                .signWith(key()) // Firma il token con la chiave segreta
+                .compact(); // Crea e restituisce il token
+    }
+
+    public String generateTokenFromUsername(Utente userDetails) {
+        String username = userDetails.getUsername(); // Ottiene il nome utente
+        String ruolo = userDetails.getRuolo().toString(); // Ottiene il ruolo dell'utente
+        String cognome = userDetails.getCognome();
+        return Jwts.builder()
+                .claims()
+                // Aggiunge il nome utente come claim del token
+                .add("ruolo", ruolo) // Aggiunge il nome utente come claim del token
+                .add("username", username)
+                .add("cognome", cognome)
+                .add("nome", userDetails.getNome())
                 .subject(username) // Imposta il nome utente come soggetto del token
                 .issuedAt(new Date()) // Imposta la data di emissione
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs)) // Imposta la scadenza del token

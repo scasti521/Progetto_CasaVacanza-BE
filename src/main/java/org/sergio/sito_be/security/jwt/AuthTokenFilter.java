@@ -36,7 +36,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         // Estrae il token JWT dalla richiesta HTTP
         try {
-            String jwt = parseJwt(request);
+            //String jwt = parseJwt(request);
+            String jwt = jwtUtils.getJwtFromHeader(request);
             System.out.println("Questo è il token: " + jwt);
             // Se il token è valido, estrae il nome utente dal token e crea un oggetto di autenticazione
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {

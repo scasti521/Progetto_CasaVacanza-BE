@@ -6,6 +6,7 @@ import org.sergio.sito_be.DTO.request.CreaUtenteRequest;
 import org.sergio.sito_be.DTO.request.LoginRequest;
 import org.sergio.sito_be.DTO.request.UpdateUtente;
 import org.sergio.sito_be.DTO.response.UtenteDTO;
+import org.sergio.sito_be.entities.Ruolo;
 import org.sergio.sito_be.entities.Utente;
 import org.sergio.sito_be.security.jwt.JwtUtils;
 import org.sergio.sito_be.service.def.UtenteService;
@@ -49,7 +50,7 @@ public class UtenteController {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String jwtToken= jwtUtils.generateTokenFromUsername(userDetails);
+        String jwtToken= jwtUtils.generateTokenFromUsername(new Utente(request.getUsername(), request.getNome(), request.getCognome(), Ruolo.ROLE_USER));
 
         return ResponseEntity.status(HttpStatus.OK).header("Utente creato e autenticato", jwtToken).build();
 
@@ -74,7 +75,7 @@ public class UtenteController {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+        String jwtToken= jwtUtils.generateTokenFromUsername(utenteService.findByUsername(userDetails.getUsername()));
 
         return ResponseEntity.status(HttpStatus.OK).header("Authorization", jwtToken).build();
 

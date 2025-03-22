@@ -49,9 +49,18 @@ public class Utente implements Comparable<Utente>{
     @OneToMany(mappedBy = "utente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Prenotazione> prenotazioni;
 
+
+    public Utente(String username, String nome, String cognome, Ruolo ruolo) {
+        this.username = username;
+        this.nome = nome;
+        this.cognome = cognome;
+        this.ruolo = ruolo;
+    }
+
     @Override
     public int compareTo(Utente other) {
         return this.nome.compareTo(other.nome);
     }
+
 
 }
