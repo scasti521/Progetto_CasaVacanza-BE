@@ -28,7 +28,7 @@ public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     // Il segreto utilizzato per firmare il token JWT, viene letto dal file di configurazione application.properties
-    @Value("${spring.app.jwtSecret}")
+    @Value("${auto.jwt.key}")
     private String jwtSecret;
 
     // Durata del token in millisecondi, anch'esso caricato dal file di configurazione
@@ -96,7 +96,6 @@ public class JwtUtils {
      */
     public boolean validateJwtToken(String authToken) {
         try {
-            System.out.println("Validate"); // Stampa un messaggio di debug
             Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(authToken); // Verifica e analizza il token
             return true; // Se non ci sono eccezioni, il token è valido
         } catch (MalformedJwtException e) { // Token non valido

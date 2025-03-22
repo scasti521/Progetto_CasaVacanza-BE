@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import org.sergio.sito_be.DTO.request.CreaUtenteRequest;
 import org.sergio.sito_be.DTO.request.LoginRequest;
 import org.sergio.sito_be.DTO.request.UpdateUtente;
-import org.sergio.sito_be.DTO.response.CasaVacanzaDTO;
 import org.sergio.sito_be.DTO.response.UtenteDTO;
 import org.sergio.sito_be.entities.Utente;
-import org.sergio.sito_be.security.TokenUtil;
 import org.sergio.sito_be.security.jwt.JwtUtils;
 import org.sergio.sito_be.service.def.UtenteService;
 import org.springframework.http.HttpStatus;
@@ -20,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
 
+import java.security.Principal;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,8 +29,6 @@ public class UtenteController {
 
     private UtenteService utenteService;
 
-    private final TokenUtil tokenUtil;
-
     private JwtUtils jwtUtils;
     private AuthenticationManager authenticationManager;
 
@@ -41,7 +38,7 @@ public class UtenteController {
         try {
             System.out.println("Ricevuto:" + request.getNome() + " " + request.getCognome() + " " + request.getUsername() + " " + request.getPassword());
             utenteService.aggiungiUtente(request);
-            authentication = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             System.out.println("Utente 2 creato");
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,20 +65,29 @@ public class UtenteController {
 
         Authentication authentication;
         try {
-            authentication = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         }catch (Exception e){
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String jwtToken= jwtUtils.generateTokenFromUsername(userDetails);
+        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
 
         return ResponseEntity.status(HttpStatus.OK).header("Authorization", jwtToken).build();
 
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<?> validate(@RequestHeader("Authorization") String token, Principal principal){
+        System.out.println("Token ricevuto: " + token);
+        if(jwtUtils.validateJwtToken(token)){
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @GetMapping("/all")

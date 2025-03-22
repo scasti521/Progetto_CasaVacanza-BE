@@ -55,6 +55,7 @@ public class DemoSecurityConfig {
                 .authorizeHttpRequests(configurer ->
                         configurer
                                 .requestMatchers("/api/utente/login", "/api/utente/crea").permitAll()
+                                .requestMatchers("api/utente/validate").permitAll()
 
                                 // Permessi per CasaVacanzaController
                                 .requestMatchers(HttpMethod.GET, "/api/casaVacanza/all").permitAll()
