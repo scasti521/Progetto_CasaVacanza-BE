@@ -14,5 +14,4 @@ public class CreaCasaVacanzaRequest {
     private int postiLetto;
     private double prezzo;
     private String immagine;
-
 }

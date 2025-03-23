@@ -26,13 +26,12 @@ public class PrenotazioneController {
     @PostMapping("/crea")
     public ResponseEntity<Prenotazione> creaPrenotazione(@Valid @RequestBody CreaPrenotazioneRequest request){
         try {
-            prenotazioneService.creaPrenotazione(request);
-            return ResponseEntity.status(HttpStatus.OK).header("Prenotazione creata", "token").build();
-        }catch (Exception e){
+            Prenotazione prenotazioneCreata = prenotazioneService.creaPrenotazione(request);
+            return ResponseEntity.ok(prenotazioneCreata);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     @DeleteMapping("/delete/{id}")

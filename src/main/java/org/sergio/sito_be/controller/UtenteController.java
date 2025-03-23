@@ -50,9 +50,9 @@ public class UtenteController {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String jwtToken= jwtUtils.generateTokenFromUsername(new Utente(request.getUsername(), request.getNome(), request.getCognome(), Ruolo.ROLE_USER));
+        String jwtToken= jwtUtils.generateTokenFromUsername(utenteService.findByUsername(userDetails.getUsername()));
 
-        return ResponseEntity.status(HttpStatus.OK).header("Utente creato e autenticato", jwtToken).build();
+        return ResponseEntity.status(HttpStatus.OK).header("Authorization", jwtToken).build();
 
     }
 

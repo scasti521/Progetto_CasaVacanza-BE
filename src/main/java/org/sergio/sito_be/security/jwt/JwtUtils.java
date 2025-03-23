@@ -82,6 +82,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .claims()
                 // Aggiunge il nome utente come claim del token
+                .add("id", userDetails.getId())
                 .add("ruolo", ruolo) // Aggiunge il nome utente come claim del token
                 .add("username", username)
                 .add("cognome", cognome)
