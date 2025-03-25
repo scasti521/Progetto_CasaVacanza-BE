@@ -25,6 +25,7 @@ public class PrenotazioneController {
 
     @PostMapping("/crea")
     public ResponseEntity<Prenotazione> creaPrenotazione(@Valid @RequestBody CreaPrenotazioneRequest request){
+
         try {
             Prenotazione prenotazioneCreata = prenotazioneService.creaPrenotazione(request);
             return ResponseEntity.ok(prenotazioneCreata);

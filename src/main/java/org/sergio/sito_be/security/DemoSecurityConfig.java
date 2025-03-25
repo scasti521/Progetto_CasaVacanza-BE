@@ -66,7 +66,7 @@ public class DemoSecurityConfig {
 
                                 // Permessi per PrenotazioneController
                                 .requestMatchers(HttpMethod.GET, "/api/prenotazione/all").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/api/prenotazione").hasRole("UTENTE")
+                                .requestMatchers(HttpMethod.POST, "/api/prenotazione/crea").hasRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, "/api/prenotazione/**").hasRole("ADMIN")
 
                                 // Permessi per UtenteController
