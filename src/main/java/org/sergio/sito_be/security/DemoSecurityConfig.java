@@ -73,7 +73,6 @@ public class DemoSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/utente/all").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/api/utente/update").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers(HttpMethod.DELETE, "/api/utente/**").hasRole("ADMIN")
-
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
